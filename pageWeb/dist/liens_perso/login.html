@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connexion</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="login-container">
+        <h2>Connexion</h2>
+            <input type="text" id="username" name="username" placeholder="Identifiant">
+            <input type="password" id="password" name="password" placeholder="Mot de passe">
+            <input type="submit" id="login-button" value="Se connecter">
+        <p id="error-message"></p>
+    </div>
+    <script>
+        document.getElementById('login-button').addEventListener('click', function(event) {
+            event.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            if (!username || !password) {
+                event.preventDefault();
+                document.getElementById('error-message').innerText = 'Veuillez remplir tous les champs';
+            }
+            fetch('/api/login?test', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    username: username,
+                    password: password
+                })
+            })
+            .then(response => {
+                if (response.ok) {
+                    window.location.href = '/liens_perso/';
+                } else {
+                    window.location.href = '/liens_perso/login?error=true';
+                }
+            });
+        });
+
+
+        //si il y a un paramètre dans l'url alors on affiche le message d'erreur
+        const urlParams = new URLSearchParams(window.location.search);
+        const error = urlParams.get('error');
+        if (error) {
+            document.getElementById('error-message').innerText = 'Identifiant ou mot de passe incorrect';
+        }
+    </script>
+
+
+
+</body>
+</html>

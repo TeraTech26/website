@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Documentation de l'API Liens Perso ≧◡≦</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #f9f9f9; padding: 20px; }
+        h1 { color: #4CAF50; }
+        h2 { margin-top: 40px; color: #333; }
+        pre { background: #eee; padding: 10px; border-radius: 5px; overflow-x: auto; }
+        label, input, textarea, button { display: block; margin: 5px 0; width: 100%; }
+        .demo { background: #fff; padding: 15px; border: 1px solid #ccc; margin-top: 10px; border-radius: 8px; }
+    </style>
+    <script>
+        let BASE_URL = ""; 
+    </script>
+</head>
+<body>
+    <h1>Documentation de l'API Liens Perso 🐾</h1>
+
+    <p><strong>URL de base (modifiable):</strong> <code id="url-display"></code></p>
+    <script>document.getElementById("url-display").textContent = BASE_URL;</script>
+
+    <h2>🔐 /api/login (POST)</h2>
+    <p>Connexion utilisateur. Stocke un cookie "token".</p>
+    <pre id="login-example-obj">
+{
+    "username":"",
+    "password":""
+}
+    </pre>
+    <pre id="login-example-fetch">
+fetch(BASE_URL + "/api/login", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ username: "", password: "" }),
+    credentials: "include"
+}).then(r => r.text()).then(console.log);
+    </pre>
+    <div class="demo" id="login-demo">
+        <label>Nom d'utilisateur : <input type="text" id="login-username"></label>
+        <label>Mot de passe : <input type="password" id="login-password"></label>
+        <button onclick="tryLogin()">Se connecter</button>
+    </div>
+
+    <h2>🔗 /api/getLink (GET)</h2>
+    <p>Liste les liens de l'utilisateur connecté.</p>
+    <pre>
+fetch(BASE_URL + "/api/getLink", {
+    credentials: "include"
+}).then(r => r.json()).then(console.log);
+    </pre>
+    <div class="demo">
+        <button onclick="tryGetLinks()">Obtenir mes liens</button>
+        <pre id="links-output"></pre>
+    </div>
+
+    <h2>➕ /api/addLink (POST)</h2>
+    <p>Ajoute un lien à la liste.</p>
+    <pre id="add-link-example-obj">{
+  "name": "",
+  "link": "",
+  "img": ""
+}</pre>
+    <pre id="add-link-example-fetch">
+fetch(BASE_URL + "/api/addLink", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify({
+        name: "",
+        link: "",
+        img: ""
+    })
+}).then(r => r.text()).then(console.log);
+    </pre>
+    <div class="demo" id="add-link-demo">
+        <label>Nom : <input type="text" id="add-name"></label>
+        <label>URL : <input type="text" id="add-link"></label>
+        <label>Image (URL) : <input type="text" id="add-img"></label>
+        <button onclick="tryAddLink()">Ajouter le lien</button>
+    </div>
+
+    <h2>❌ /api/removeLink (POST)</h2>
+    <p>Supprime un lien par son index.</p>
+    <pre id="remove-link-example">{ "index": 0 }</pre>
+    <pre id="remove-link-fetch">
+fetch(BASE_URL + "/api/removeLink", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify({ index: 0 })
+}).then(r => r.text()).then(console.log);
+    </pre>
+    <div class="demo" id="remove-link-demo">
+        <label>Index à supprimer : <input type="number" id="remove-index"></label>
+        <button onclick="tryRemoveLink()">Supprimer</button>
+    </div>
+
+    <h2>📝 /api/updateLink (POST)</h2>
+    <p>Modifie un lien existant ou le déplace.</p>
+    <pre id="update-link-example">{
+  "index": 0,
+  "newIndex": 1,
+  "name": "",
+  "link": "",
+  "img": ""
+}</pre>
+    <pre id="update-link-fetch">
+fetch(BASE_URL + "/api/updateLink", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify({
+        index: 0,
+        newIndex: 1,
+        name: "",
+        link: "",
+        img: ""
+    })
+}).then(r => r.text()).then(console.log);
+    </pre>
+    <div class="demo" id="update-link-demo">
+        <label>Index actuel : <input type="number" id="update-index"></label>
+        <label>Nouveau nom (optionnel) : <input type="text" id="update-name"></label>
+        <label>Nouvelle URL (optionnel) : <input type="text" id="update-link"></label>
+        <label>Nouvelle image (optionnel) : <input type="text" id="update-img"></label>
+        <label>Nouvel index (optionnel) : <input type="number" id="update-newindex"></label>
+        <button onclick="tryUpdateLink()">Mettre à jour</button>
+    </div>
+
+
+    <script>
+        const loginExample = {
+            obj: `{
+  "username": "{{username}}",
+  "password": "{{password}}"
+}`,
+            fetch: `fetch(BASE_URL + "/api/login", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ username: "{{username}}", password: "{{password}}"),
+    credentials: "include"
+}).then(r => r.text()).then(console.log);`,
+            objDiv: document.getElementById("login-example-obj"),
+            fetchDiv: document.getElementById("login-example-fetch")
+        }
+        const addLinkExample = {
+            obj: `{
+  "name": "{{name}}",
+  "link": "{{link}}",
+  "img": "{{img}}"
+}`,
+            fetch: `fetch(BASE_URL + "/api/addLink", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify({
+        name: "{{name}}",
+        link: "{{link}}",
+        img: "{{img}}"
+    })
+}).then(r => r.text()).then(console.log);
+`,
+            objDiv: document.getElementById("add-link-example-obj"),
+            fetchDiv: document.getElementById("add-link-example-fetch")
+        }
+        const removeLinkExample = {
+            obj: `{ "index": {{index}} }`,
+            fetch: `fetch(BASE_URL + "/api/removeLink", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify({ index: {{index}} })
+}).then(r => r.text()).then(console.log);`,
+            objDiv: document.getElementById("remove-link-example"),
+            fetchDiv: document.getElementById("remove-link-fetch")
+        }
+        const updateLinkExample = {
+            obj: `{
+    "index": {{index}},
+    "newIndex": {{newIndex}},
+    "name": "{{name}}",
+    "link": "{{link}}",
+    "img": "{{img}}"
+}`,
+            fetch: `fetch(BASE_URL + "/api/updateLink", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify({
+        index: {{index}},
+        newIndex: {{newIndex}},
+        name: "{{name}}",
+        link: "{{link}}",
+        img: "{{img}}"
+    })
+}).then(r => r.text()).then(console.log);`,
+            objDiv: document.getElementById("update-link-example"),
+            fetchDiv: document.getElementById("update-link-fetch")
+        }
+
+
+
+        const inputExemple = document.getElementById("login-demo").getElementsByTagName("input")
+        for(let i = 0; i < inputExemple.length; i++){
+            inputExemple[i].addEventListener("input", function(){
+                loginExample.objDiv.textContent = loginExample.obj.replace("{{username}}", inputExemple[0].value).replace("{{password}}", inputExemple[1].value)
+                loginExample.fetchDiv.textContent = loginExample.fetch.replace("{{username}}", inputExemple[0].value).replace("{{password}}", inputExemple[1].value)
+            })
+        }
+        const inputExemple2 = document.getElementById("add-link-demo").getElementsByTagName("input")
+        for(let i = 0; i < inputExemple2.length; i++){
+            inputExemple2[i].addEventListener("input", function(){
+                addLinkExample.objDiv.textContent = addLinkExample.obj.replace("{{name}}", inputExemple2[0].value).replace("{{link}}", inputExemple2[1].value).replace("{{img}}", inputExemple2[2].value)
+                addLinkExample.fetchDiv.textContent = addLinkExample.fetch.replace("{{name}}", inputExemple2[0].value).replace("{{link}}", inputExemple2[1].value).replace("{{img}}", inputExemple2[2].value)
+            })
+        }
+        const inputExemple3 = document.getElementById("remove-link-demo").getElementsByTagName("input")
+        for(let i = 0; i < inputExemple3.length; i++){
+            inputExemple3[i].addEventListener("input", function(){
+                removeLinkExample.objDiv.textContent = removeLinkExample.obj.replace("{{index}}", inputExemple3[0].value)
+                removeLinkExample.fetchDiv.textContent = removeLinkExample.fetch.replace("{{index}}", inputExemple3[0].value)
+            })
+        }
+        const inputExemple4 = document.getElementById("update-link-demo").getElementsByTagName("input")
+        for(let i = 0; i < inputExemple4.length; i++){
+            inputExemple4[i].addEventListener("input", function(){
+                updateLinkExample.objDiv.textContent = updateLinkExample.obj.replace("{{index}}", inputExemple4[0].value).replace("{{newIndex}}", inputExemple4[1].value).replace("{{name}}", inputExemple4[2].value).replace("{{link}}", inputExemple4[3].value).replace("{{img}}", inputExemple4[4].value)
+                updateLinkExample.fetchDiv.textContent = updateLinkExample.fetch.replace("{{index}}", inputExemple4[0].value).replace("{{newIndex}}", inputExemple4[1].value).replace("{{name}}", inputExemple4[2].value).replace("{{link}}", inputExemple4[3].value).replace("{{img}}", inputExemple4[4].value)
+            })
+        }
+        
+        
+        async function tryLogin() {
+            const username = document.getElementById("login-username").value;
+            const password = document.getElementById("login-password").value;
+            const res = await fetch(BASE_URL + "/api/login", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ username, password }),
+                credentials: "include"
+            });
+            alert(await res.text());
+        }
+
+        async function tryGetLinks() {
+            const res = await fetch(BASE_URL + "/api/getLink", {
+                credentials: "include"
+            });
+            const data = await res.json();
+            document.getElementById("links-output").textContent = JSON.stringify(data, null, 2);
+        }
+
+        async function tryAddLink() {
+            const name = document.getElementById("add-name").value;
+            const link = document.getElementById("add-link").value;
+            const img = document.getElementById("add-img").value;
+            const res = await fetch(BASE_URL + "/api/addLink", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                credentials: "include",
+                body: JSON.stringify({ name, link, img })
+            });
+            alert(await res.text());
+        }
+
+        async function tryRemoveLink() {
+            const index = parseInt(document.getElementById("remove-index").value);
+            const res = await fetch(BASE_URL + "/api/removeLink", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                credentials: "include",
+                body: JSON.stringify({ index })
+            });
+            alert(await res.text());
+        }
+
+        async function tryUpdateLink() {
+            const index = parseInt(document.getElementById("update-index").value);
+            const newIndex = parseInt(document.getElementById("update-newindex").value);
+            const name = document.getElementById("update-name").value;
+            const link = document.getElementById("update-link").value;
+            const img = document.getElementById("update-img").value;
+            const res = await fetch(BASE_URL + "/api/updateLink", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                credentials: "include",
+                body: JSON.stringify({ index, newIndex, name, link, img })
+            });
+            alert(await res.text());
+        }
+    </script>
+</body>
+</html>
